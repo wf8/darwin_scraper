@@ -64,7 +64,7 @@ def prep_genbank_mining(row):
     if row[21] != '':
         accepted_binomial = u' '.join((row[1], row[2])) 
         file = codecs.open('gb_species.csv', 'a', 'utf-8')
-        file.write(u','.join((accepted_binomial, row[25])).replace('"',''))
+        file.write(u','.join((accepted_binomial, row[25], '\n')).replace('"',''))
         file.close()
 
 
@@ -111,5 +111,7 @@ for link in links:
     sys.stdout.flush()
     get_data(link)
     i += 1
-    #if i == 10:
-    #    sys.exit(0)
+    #if i == 20:
+    #     print('\nDone.')
+    #     sys.exit(0)
+print('\nDone.')
