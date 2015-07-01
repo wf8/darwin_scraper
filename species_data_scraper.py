@@ -19,7 +19,28 @@ def get_content(key, source):
         return u''.join(('"',source[start:end].replace(key, '').strip(),'"'))
     else:
         return ''
-    
+
+def get_synonyms(source):
+    key = u'Sinónimos: </strong>'
+    if source.find(key) != -1:
+        start = source.find(key)
+        end = source.find('</td>', start + len(key))
+        synonyms = source[start:end].replace(key, '').strip()
+        synonyms = synonyms.replace('</a>', '')
+        synonyms_list = synonyms.split('<a href="')
+        synonyms_list_no_anchors = []
+        for synonym in synonyms_list:
+            end_anchor = synonym.find('">') + 2
+            syn = synonym[end_anchor:].strip()
+            syn = syn.replace(', hom. illeg.', '')
+            syn = syn.replace(',', '')
+            if syn.strip() != '':
+                synonyms_list_no_anchors.append(syn)
+        synonyms = u','.join(synonyms_list_no_anchors)
+        return u''.join(('"',synonyms,'"'))
+    else:
+        return ''
+
 
 for link in links:
     page = requests.get(link)
@@ -37,8 +58,9 @@ for link in links:
     row = []
     for key in keys:
         row.append(get_content(key, source))
-
+    row.append(get_synonyms(source))
     row.append(u'\n')
+    
     file = codecs.open(output_file, "a", "utf-8")
     file.write(u','.join(row)) 
     file.close()
